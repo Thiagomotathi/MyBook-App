@@ -1,7 +1,12 @@
 # 📚 MyBookApp
 
+<p align="center">
+  <img src="Assets/icon.png" alt="MyBookApp Icon" width="120" height="120"/>
+</p>
+
 MyBookApp é um aplicativo em SwiftUI que permite explorar livros através da API do **Google Books**, organizar leituras pessoais e acompanhar hábitos de leitura.  
 O projeto foi desenvolvido com arquitetura **MVVM** e foco em simplicidade, organização e extensibilidade.
+
 
 ---
 
