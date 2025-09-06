@@ -2,8 +2,6 @@
 
 <p align="center">
   <img src="https://github.com/Thiagomotathi/MyBook-App/blob/main/MyBook%20App/Assets.xcassets/AppIcon.appiconset/Icon-iOS-Default-1024x1024@1x.png?raw=true" width="200" height="200"/>
-  <img src="https://github.com/Thiagomotathi/MyBook-App/blob/main/MyBook%20App/Assets.xcassets/AppIcon.appiconset/Icon-iOS-ClearDark-1024x1024@1x.png?raw=true"width="200" height="200"/>
-  <img src="https://github.com/Thiagomotathi/MyBook-App/blob/main/MyBook%20App/Assets.xcassets/AppIcon.appiconset/Icon-iOS-Dark-1024x1024@1x.png?raw=true"width="200" height="200"/>
 </p>
 
 
