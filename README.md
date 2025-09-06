@@ -1,8 +1,12 @@
 # 📚 MyBookApp
 
 <p align="center">
-  <img src="https://github.com/Thiagomotathi/MyBook-App/blob/main/MyBook%20App/Assets.xcassets/AppIcon.appiconset/Icon-iOS-Default-1024x1024@1x.png?raw=true"/>
+  <img src="https://github.com/Thiagomotathi/MyBook-App/blob/main/MyBook%20App/Assets.xcassets/AppIcon.appiconset/Icon-iOS-Default-1024x1024@1x.png?raw=true" width="200" height="200"/>
+  <img src="https://github.com/Thiagomotathi/MyBook-App/blob/main/MyBook%20App/Assets.xcassets/AppIcon.appiconset/Icon-iOS-ClearDark-1024x1024@1x.png?raw=true"width="200" height="200"/>
+  <img src="https://github.com/Thiagomotathi/MyBook-App/blob/main/MyBook%20App/Assets.xcassets/AppIcon.appiconset/Icon-iOS-Dark-1024x1024@1x.png?raw=true"width="200" height="200"/>
 </p>
+
+
 
 MyBookApp é um aplicativo em SwiftUI que permite explorar livros através da API do **Google Books**, organizar leituras pessoais e acompanhar hábitos de leitura.  
 O projeto foi desenvolvido com arquitetura **MVVM** e foco em simplicidade, organização e extensibilidade.
