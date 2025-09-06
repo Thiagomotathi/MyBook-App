@@ -68,7 +68,10 @@ struct TrackedBook: Codable, Identifiable, Equatable {
     }
 }
 
-// MARK: - Books Search ViewModel
+
+
+
+// MARK: - ViewModel
 @MainActor
 class BooksViewModel: ObservableObject {
     @Published var books: [Volume] = []
@@ -104,7 +107,7 @@ class BooksViewModel: ObservableObject {
     }
 }
 
-// MARK: - Reading List ViewModel
+
 @MainActor
 class ReadingListViewModel: ObservableObject {
     @Published var savedBooks: [TrackedBook] = [] {
@@ -154,43 +157,8 @@ class ReadingListViewModel: ObservableObject {
     }
 }
 
-// MARK: - Recent Searches Helper
-struct RecentSearchesStore {
-    static let key = "recentSearches"
-    static let maxCount = 10
-    
-    static func load() -> [String] {
-        (UserDefaults.standard.stringArray(forKey: key) ?? [])
-    }
-    
-    static func save(_ items: [String]) {
-        UserDefaults.standard.set(items, forKey: key)
-    }
-    
-    static func add(_ term: String) {
-        let trimmed = term.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        var items = load()
-        // remove duplicado (case-insensitive)
-        items.removeAll { $0.caseInsensitiveCompare(trimmed) == .orderedSame }
-        items.insert(trimmed, at: 0)
-        if items.count > maxCount { items = Array(items.prefix(maxCount)) }
-        save(items)
-    }
-    
-    static func remove(_ term: String) {
-        var items = load()
-        items.removeAll { $0.caseInsensitiveCompare(term) == .orderedSame }
-        save(items)
-    }
-    
-    static func clear() {
-        save([])
-    }
-}
 
 // MARK: - Views
-// BooksSearchView: mostra "Recentes" como List com swipe-to-delete.
 struct BooksSearchView: View {
     @StateObject private var viewModel = BooksViewModel()
     @EnvironmentObject var readingList: ReadingListViewModel
@@ -264,21 +232,17 @@ struct BooksSearchView: View {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(book.volumeInfo.title)
                                                 .bold()
+                                                .lineLimit(4)
                                             if let authors = book.volumeInfo.authors {
                                                 Text(authors.joined(separator: ", "))
                                                     .font(.subheadline)
                                                     .foregroundColor(.secondary)
                                             }
-                                            if let description = book.volumeInfo.description {
-                                                Text(description)
-                                                    .font(.caption)
-                                                    .foregroundColor(.gray)
-                                                    .lineLimit(3)
-                                            }
                                         }
                                     }
                                     .padding(.vertical, 4)
                                 }
+                                .listRowBackground(Color.secondary.opacity(0))
                             }
                         }
                         .scrollContentBackground(.hidden)
@@ -301,6 +265,42 @@ struct BooksSearchView: View {
         }
     }
 }
+
+
+struct RecentSearchesStore {
+    static let key = "recentSearches"
+    static let maxCount = 10
+    
+    static func load() -> [String] {
+        (UserDefaults.standard.stringArray(forKey: key) ?? [])
+    }
+    
+    static func save(_ items: [String]) {
+        UserDefaults.standard.set(items, forKey: key)
+    }
+    
+    static func add(_ term: String) {
+        let trimmed = term.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        var items = load()
+        // remove duplicado (case-insensitive)
+        items.removeAll { $0.caseInsensitiveCompare(trimmed) == .orderedSame }
+        items.insert(trimmed, at: 0)
+        if items.count > maxCount { items = Array(items.prefix(maxCount)) }
+        save(items)
+    }
+    
+    static func remove(_ term: String) {
+        var items = load()
+        items.removeAll { $0.caseInsensitiveCompare(term) == .orderedSame }
+        save(items)
+    }
+    
+    static func clear() {
+        save([])
+    }
+}
+
 
 struct AnimatedCirclesBackground: View {
     @State private var offsets: [CGSize] = Array(repeating: .zero, count: 3)
@@ -337,9 +337,11 @@ struct AnimatedCirclesBackground: View {
     }
 }
 
+
 #Preview {
     AnimatedCirclesBackground()
 }
+
 
 struct BookDetailView: View {
     let book: Volume
@@ -433,6 +435,7 @@ struct BookDetailView: View {
     }
 }
 
+
 struct ReadingSessionView: View {
     let book: Volume
     @EnvironmentObject var readingList: ReadingListViewModel
@@ -524,57 +527,132 @@ struct ReadingSessionView: View {
     }
 }
 
+
 struct ReadingListView: View {
     @EnvironmentObject var readingList: ReadingListViewModel
-
+    @State private var currentIndex: Int = 0
+    @GestureState private var dragOffset: CGFloat = 0
+    
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(readingList.savedBooks) { trackedBook in
-                    NavigationLink(destination: BookDetailView(book: trackedBook.volume)) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(trackedBook.volume.volumeInfo.title)
-                                    .font(.headline)
-
-                                if let authors = trackedBook.volume.volumeInfo.authors {
-                                    Text(authors.joined(separator: ", "))
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
-
-                                if let totalPages = trackedBook.volume.volumeInfo.pageCount, totalPages > 0 {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        ProgressView(value: trackedBook.progress)
-                                            .progressViewStyle(LinearProgressViewStyle())
-                                            .frame(maxWidth: 150)
-
-                                        Text("Página \(trackedBook.currentPage) de \(totalPages)")
-                                            .font(.caption)
-                                            .foregroundColor(.gray)
+        NavigationStack {
+            GeometryReader { proxy in
+                let height = proxy.size.height
+                let width = proxy.size.width
+                
+                ZStack {
+                    AnimatedCirclesBackground()
+                    
+                    if readingList.savedBooks.isEmpty {
+                        Text("Nenhum livro salvo ainda")
+                            .foregroundColor(.secondary)
+                            .padding()
+                    } else {
+                        // Vertical paging manual
+                        ScrollView(.vertical, showsIndicators: false) {
+                            VStack(spacing: 0) {
+                                ForEach(Array(readingList.savedBooks.enumerated()), id: \.element.id) { index, tracked in
+                                    NavigationLink {
+                                        BookDetailView(book: tracked.volume)
+                                    } label: {
+                                        BookPageView(tracked: tracked, pageSize: CGSize(width: width, height: height))
+                                            .frame(width: width, height: height)
                                     }
+                                    .buttonStyle(.plain)
                                 }
                             }
-
-                            Spacer()
                         }
+                        .content.offset(y: -CGFloat(currentIndex) * height + dragOffset)
+                        .gesture(
+                            DragGesture()
+                                .updating($dragOffset) { value, state, _ in
+                                    state = value.translation.height
+                                }
+                                .onEnded { value in
+                                    let threshold = height * 0.25
+                                    var newIndex = currentIndex
+                                    
+                                    if value.translation.height < -threshold {
+                                        newIndex = min(currentIndex + 1, max(0, readingList.savedBooks.count - 1))
+                                    } else if value.translation.height > threshold {
+                                        newIndex = max(currentIndex - 1, 0)
+                                    }
+                                    
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
+                                        currentIndex = newIndex
+                                    }
+                                }
+                        )
+                        .animation(.easeInOut(duration: 0.2), value: currentIndex)
+                        .ignoresSafeArea()
                     }
                 }
-                .onDelete { indexSet in
-                    indexSet.map { readingList.savedBooks[$0].volume }
-                        .forEach { readingList.removeBook($0) }
-                }
             }
-            .navigationTitle("Minha Lista")
+            .navigationTitle("Você está lendo")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
 
-// MARK: - Tabs Enum
-enum Tabs: Hashable {
-    case buscar
-    case lista
+struct BookPageView: View {
+    let tracked: TrackedBook
+    let pageSize: CGSize
+    
+    var body: some View {
+        ZStack {
+            // Transparente para deixar o background animado visível
+            Color.clear
+            
+            VStack(spacing: 16) {
+                Spacer(minLength: 10)
+                
+                if let url = tracked.volume.volumeInfo.imageLinks?.bestImageURL {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .scaledToFit()
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(maxWidth: pageSize.width * 0.7, maxHeight: pageSize.height * 0.65)
+                    .cornerRadius(12)
+                    .shadow(radius: 10)
+                }
+                
+                Text(tracked.volume.volumeInfo.title)
+                    .font(.title3.bold())
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.primary)
+                    .padding(.horizontal, 24)
+                
+                Spacer(minLength: 20)
+            }
+            .frame(width: pageSize.width, height: pageSize.height)
+        }
+    }
 }
+
+
+struct worldView: View {
+    var body: some View {
+        ZStack {
+            AnimatedCirclesBackground()
+            Text("worldView")
+        }
+    }
+}
+
+struct PersonView: View {
+    var body: some View {
+        ZStack {
+            AnimatedCirclesBackground()
+            
+            Text("PersonView")
+        }
+        
+    }
+}
+
+
 
 // MARK: - Root Content
 struct ContentView: View {
@@ -588,10 +666,10 @@ struct ContentView: View {
                 ReadingListView()
             }
             Tab("Explorar", systemImage: "eyeglasses", value: .lista) {
-                ReadingListView()
+                worldView()
             }
             Tab("Perfil", systemImage: "person.fill", value: .lista) {
-                ReadingListView()
+                PersonView()
             }
             
             // Aba Buscar com papel .search (expansão da Tab Bar com campo de busca)
@@ -612,7 +690,3 @@ struct ContentView: View {
     
     @State private var _sharedReadingList = State(initialValue: ReadingListViewModel())
 }
-
-//#Preview {
-//    ContentView()
-//}
