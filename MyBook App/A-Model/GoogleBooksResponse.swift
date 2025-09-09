@@ -39,14 +39,24 @@ struct ImageLinks: Codable {
 
 extension ImageLinks {
     var bestImageURL: URL? {
-        // ordem de prioridade
+        // ordem de prioridade (mantida)
         let candidates = [extraLarge, large, medium, small, thumbnail, smallThumbnail]
         
-        for link in candidates {
-            if let link, let url = URL(string: link.replacingOccurrences(of: "http://", with: "https://")) {
+        for var link in candidates.compactMap({ $0 }) {
+            // força HTTPS
+            link = link.replacingOccurrences(of: "http://", with: "https://")
+            
+            // se a URL tiver zoom, força para 3
+            if link.contains("zoom=") {
+                link = link.replacingOccurrences(of: "zoom=1", with: "zoom=3")
+                link = link.replacingOccurrences(of: "zoom=2", with: "zoom=3")
+            }
+            
+            if let url = URL(string: link) {
                 return url
             }
         }
         return nil
     }
 }
+
