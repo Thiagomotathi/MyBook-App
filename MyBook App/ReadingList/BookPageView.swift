@@ -145,30 +145,30 @@ struct BookPageView: View {
 }
 
 // MARK: - Preview
-struct BookPageView_Previews: PreviewProvider {
-    static var previews: some View {
-        let exampleVolume = Volume(
-            id: "1",
-            volumeInfo: VolumeInfo(
-                title: "Exemplo de Livro",
-                authors: ["Autor Exemplar"],
-                description: "Uma breve descrição de teste para visualização.",
-                imageLinks: ImageLinks(
-                    smallThumbnail: nil,
-                    thumbnail: nil,
-                    small: nil,
-                    medium: "https://via.placeholder.com/200x300",
-                    large: nil,
-                    extraLarge: nil
-                ),
-                pageCount: 100
-            )
-        )
-        let trackedBook = TrackedBook(volume: exampleVolume, currentPage: 0)
-        
-        BookPageView(tracked: trackedBook)
-            .previewLayout(.sizeThatFits)
-            .background(Color.gray.opacity(0.2))
-    }
-}
+//struct BookPageView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let exampleVolume = Volume(
+//            id: "1",
+//            volumeInfo: VolumeInfo(
+//                title: "Exemplo de Livro",
+//                authors: ["Autor Exemplar"],
+//                description: "Uma breve descrição de teste para visualização.",
+//                imageLinks: ImageLinks(
+//                    smallThumbnail: nil,
+//                    thumbnail: nil,
+//                    small: nil,
+//                    medium: "https://via.placeholder.com/200x300",
+//                    large: nil,
+//                    extraLarge: nil
+//                ),
+//                pageCount: 100
+//            )
+//        )
+//        let trackedBook = TrackedBook(volume: exampleVolume, currentPage: 0)
+//        
+//        BookPageView(tracked: trackedBook)
+//            .previewLayout(.sizeThatFits)
+//            .background(Color.gray.opacity(0.2))
+//    }
+//}
 

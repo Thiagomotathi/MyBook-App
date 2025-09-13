@@ -21,7 +21,7 @@ struct ReadingListView: View {
                             .padding()
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
-                        TikTokVerticalBooksSnapView(books: readingList.savedBooks)
+                        TikTokBooksView()
                             .background(Color(.systemBackground))
                     }
                 }
