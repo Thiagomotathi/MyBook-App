@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+// MARK: - Tabs Enum
+enum Tabs: Hashable {
+    case leituras
+    case explorar
+    case perfil
+    case buscar
+}
+
 @main
 struct MyBook_AppApp: App {
     var body: some Scene {
