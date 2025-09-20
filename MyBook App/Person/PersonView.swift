@@ -9,7 +9,10 @@ import SwiftUI
 struct PersonView: View {
     var body: some View {
         ZStack {
-            AnimatedCirclesBackground()
+            // círculos animados usando a cor dominante com mais saturação e opacidade
+            AnimatedCirclesBackground(
+                agitation: .alto
+            )
             
             Text("PersonView")
         }
