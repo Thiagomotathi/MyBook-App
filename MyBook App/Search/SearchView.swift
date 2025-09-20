@@ -70,6 +70,7 @@ struct BooksSearchView: View {
                                 .listRowBackground(LiquidGlassRowBackground())
                             }
                         }
+                        .scrollIndicators(.hidden)
                         .listStyle(.plain)
                         .scrollContentBackground(.hidden)
                         .padding(.horizontal)
