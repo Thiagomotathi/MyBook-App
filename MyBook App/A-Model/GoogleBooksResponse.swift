@@ -73,4 +73,3 @@ extension ImageLinks {
         return nil
     }
 }
-

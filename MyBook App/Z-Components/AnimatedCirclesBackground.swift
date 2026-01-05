@@ -14,7 +14,7 @@ struct AnimatedCirclesBackground: View {
         // Fator de amplitude relativo ao tamanho da tela
         var amplitudeFactor: CGFloat {
             switch self {
-            case .baixo: return 1.0 / 2.0   // menos agitado
+            case .baixo: return 1.0 / 4.0   // menos agitado
             case .alto:  return 1.0 / 1.0   // mais agitado
             }
         }
@@ -23,6 +23,8 @@ struct AnimatedCirclesBackground: View {
     // Opcionais, com fallback interno
     var colors: [Color]? = nil
     var agitation: AgitationLevel? = nil
+    var hasBackground: Bool?
+    var backgroundColor: Color?
     
     @State private var offsets: [CGSize] = Array(repeating: .zero, count: 3)
     
@@ -33,6 +35,14 @@ struct AnimatedCirclesBackground: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
+                if hasBackground == true {
+                    LinearGradient(
+                        colors: [backgroundColor ?? .clear, Color(.systemBackground)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                }
+                
                 ForEach(offsets.indices, id: \.self) { index in
                     Circle()
                         .fill(colorForIndex(index).opacity(0.6))
@@ -75,9 +85,5 @@ struct AnimatedCirclesBackground: View {
         // Uso padrão (sem passar nada)
         AnimatedCirclesBackground()
             .opacity(0.5)
-        
-        // Exemplo customizado (opcionais podem ser fornecidas quando quiser)
-        // AnimatedCirclesBackground(colors: [.pink, .purple, .mint], agitation: .alto)
-        //     .opacity(0.5)
     }
 }

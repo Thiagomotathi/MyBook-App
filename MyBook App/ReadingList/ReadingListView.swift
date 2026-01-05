@@ -11,7 +11,7 @@ struct ReadingListView: View {
 
     var body: some View {
         GeometryReader { geo in
-            NavigationView {
+            NavigationStack {
                 ZStack {
                     Color.clear
                     

@@ -7,7 +7,25 @@
 		<key>MyBook App.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>ReadingWidgetsExtension.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>CF97BF642F0C5B380073C6DB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>CFD4E6862E6A1BDD0068914E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
